@@ -15,7 +15,8 @@ import java.util.Map;
 public class JedisTool {
     @Autowired
     private JedisPool jedisPool;//注入JedisPool
-    public void demo_set(String token,Map<String, String> value){
+
+    public void set(String token,Map<String, String> value){
         //获取ShardedJedis对象
         Jedis jedis = jedisPool.getResource();
         //存入键值对
@@ -24,19 +25,41 @@ public class JedisTool {
             System.out.print("已经存在key了");
         }
         jedis.hmset(token,value);
-        jedis.expire(token, 6000);
+        jedis.expire(token, 3600*240);
         System.out.print(jedis.hvals(token));
+        System.out.print(jedis.hgetAll(token));
         //回收ShardedJedis实例
         jedis.close();
 
     }
+    public void setString(String name,String value){
+        //获取ShardedJedis对象
+        Jedis jedis = jedisPool.getResource();
 
-    public List demo_get(String token){
+        jedis.set(name,value);
+        jedis.close();
+
+    }
+    public String getString(String name){
         Jedis jedis = jedisPool.getResource();
         //根据键值获得数据
-      List result = jedis.hvals(token);
+      String result=jedis.get(name);
         jedis.close();
 
         return result;
+    }
+    public Map get(String token){
+        Jedis jedis = jedisPool.getResource();
+        //根据键值获得数据
+        if(jedis.exists(token)){
+        Map<String,String> map= jedis.hgetAll(token);
+            jedis.close();
+            return map;}
+            System.out.print("不存在");
+       jedis.close();
+        return null;
+
+
+
     }
 }

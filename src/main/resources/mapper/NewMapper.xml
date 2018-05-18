@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hh.mapper.NewMapper">
+  <resultMap id="BaseResultMap" type="com.hh.entity.New">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="newtitle" jdbcType="VARCHAR" property="newtitle" />
+    <result column="newcontent" jdbcType="VARCHAR" property="newcontent" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="newimg" jdbcType="VARCHAR" property="newimg" />
+    <result column="looknumber" jdbcType="INTEGER" property="looknumber" />
+    <result column="commentnumber" jdbcType="INTEGER" property="commentnumber" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="newtype" jdbcType="VARCHAR" property="newtype" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, newtitle, newcontent, userid, newimg, looknumber, commentnumber, date, newtype
+  </sql>
+  <sql id="notcontent">
+    id, newtitle, userid, newimg, looknumber, commentnumber, date, newtype
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from news
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllNew"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from news
+  </select>
+  <select id="selectNewByNumber"  resultMap="BaseResultMap">
+    select
+    <include refid="notcontent" />
+    from news order by id desc LIMIT #{0},#{1}
+  </select>
+  <select id="selectNewByLook"  resultMap="BaseResultMap">
+    select
+    <include refid="notcontent" />
+    from news order by looknumber desc LIMIT #{0},#{1}
+  </select>
+  <select id="selectNewByType"  resultMap="BaseResultMap">
+    select
+    <include refid="notcontent" />
+    from news where newtype=#{2} order by looknumber desc LIMIT #{0},#{1}
+  </select>
+  <select id="selectByIdScope"  resultMap="BaseResultMap">
+    select
+    <include refid="notcontent" />
+    from news where id  in(select newid from reverses
+    where userid=#{2} order by id desc) order by id desc LIMIT #{0},#{1}
+  </select>
+  <select id="selectNewByNumberTwo"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from news order by id desc LIMIT #{0},#{1}
+  </select>
+  <select id="selectNewnumber"  resultType="java.lang.Integer">
+    select count(id)  from news
+  </select>
+  <select id="selectByUserId"  resultMap="BaseResultMap">
+    select
+    <include refid="notcontent" />
+    from news where userid=#{2} order by id desc LIMIT #{0},#{1}
+  </select>
+<select id="selectByMsg"  resultMap="BaseResultMap">
+    select
+    <include refid="notcontent" />
+    from news where newtitle like  "%"#{2}"%" or newcontent like  "%"#{2}"%" order by id desc LIMIT #{0},#{1}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete a.*,b.*,d.*,e.*,f.*  from news a left join comments b on a.id=b.newid left join newadmires d on a.id=d.newid left join commentadmires e on b.id=e.commentid left join reverses f on a.id=f.newid
+    where a.id = #{0}
+  </delete>
+
+  <insert id="insert" parameterType="com.hh.entity.New">
+    insert into news (id, newtitle, newcontent, 
+      userid, newimg, looknumber, 
+      commentnumber, date, newtype)
+    values (#{id,jdbcType=INTEGER}, #{newtitle,jdbcType=VARCHAR}, #{newcontent,jdbcType=VARCHAR}, 
+      #{userid,jdbcType=INTEGER}, #{newimg,jdbcType=VARCHAR}, #{looknumber,jdbcType=INTEGER}, 
+      #{commentnumber,jdbcType=INTEGER}, #{date,jdbcType=TIMESTAMP}, #{newtype,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hh.entity.New">
+    insert into news
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="newtitle != null">
+        newtitle,
+      </if>
+      <if test="newcontent != null">
+        newcontent,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="newimg != null">
+        newimg,
+      </if>
+      <if test="looknumber != null">
+        looknumber,
+      </if>
+      <if test="commentnumber != null">
+        commentnumber,
+      </if>
+      <if test="date != null">
+        date,
+      </if>
+      <if test="newtype != null">
+        newtype,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="newtitle != null">
+        #{newtitle,jdbcType=VARCHAR},
+      </if>
+      <if test="newcontent != null">
+        #{newcontent,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="newimg != null">
+        #{newimg,jdbcType=VARCHAR},
+      </if>
+      <if test="looknumber != null">
+        #{looknumber,jdbcType=INTEGER},
+      </if>
+      <if test="commentnumber != null">
+        #{commentnumber,jdbcType=INTEGER},
+      </if>
+      <if test="date != null">
+        #{date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newtype != null">
+        #{newtype,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hh.entity.New">
+    update news
+    <set>
+      <if test="newtitle != null">
+        newtitle = #{newtitle,jdbcType=VARCHAR},
+      </if>
+      <if test="newcontent != null">
+        newcontent = #{newcontent,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="newimg != null">
+        newimg = #{newimg,jdbcType=VARCHAR},
+      </if>
+      <if test="looknumber != null">
+        looknumber = #{looknumber,jdbcType=INTEGER},
+      </if>
+      <if test="commentnumber != null">
+        commentnumber = #{commentnumber,jdbcType=INTEGER},
+      </if>
+      <if test="date != null">
+        date = #{date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newtype != null">
+        newtype = #{newtype,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hh.entity.New">
+    update news
+    set newtitle = #{newtitle,jdbcType=VARCHAR},
+      newcontent = #{newcontent,jdbcType=VARCHAR},
+      userid = #{userid,jdbcType=INTEGER},
+      newimg = #{newimg,jdbcType=VARCHAR},
+      looknumber = #{looknumber,jdbcType=INTEGER},
+      commentnumber = #{commentnumber,jdbcType=INTEGER},
+      date = #{date,jdbcType=TIMESTAMP},
+      newtype = #{newtype,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updatecommentnumber" parameterType="java.lang.Integer">
+    update news
+    set commentnumber =commentnumber+1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updatelooknumber" parameterType="java.lang.Integer">
+    update news
+    set looknumber =looknumber+1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

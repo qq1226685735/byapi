@@ -44,10 +44,10 @@ public class TestAction
         user.put("name","hh");
         String token=TokenUtil.GetGUID();
         System.out.print(token);
-        jedisTool.demo_set(token,user);
+        jedisTool.set(token,user);
         ObjectMapper mapper = new ObjectMapper();
 
-        return  jedisTool.demo_get(token);
+        return (List) jedisTool.get(token);
     }
 
 }

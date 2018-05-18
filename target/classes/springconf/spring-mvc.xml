@@ -35,7 +35,7 @@
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
         <!-- 100M -->
-        <property name="maxUploadSize" value="104857600"></property>
+        <property name="maxUploadSize" value="1048576000"></property>
         <property name="defaultEncoding" value="utf-8"></property>
     </bean>
     <mvc:cors>
@@ -45,5 +45,8 @@
                      allowed-headers="Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
                      allow-credentials="true" />
     </mvc:cors>
-
+    <!-- 静态资源处理  css js imgs -->
+    <mvc:resources location="/views/" mapping="/views/**"/>
+    <mvc:resources location="/upload/" mapping="/upload/**"/>
+    <mvc:resources location="/images/" mapping="/images/**"/>
 </beans>
